@@ -1,2 +1,5 @@
 *.db
 .vs/
+Debug/
+Log.txt
+*.user

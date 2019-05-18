@@ -25,11 +25,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// グラフィックの描画先を裏画面にセット
 	SetDrawScreen(DX_SCREEN_BACK);
 
+	VECTOR playerPos;
+	VECTOR playerDirection;
+	float playerSpeed = 5.0f;
+	int velocity;
+
 	// プレイヤーのグラフィックをメモリにロード＆表示座標を初期化
-	int playerX, playerY, playerGraph;
+	int /*playerPosX, playerPosY,*/ playerGraph;
 	playerGraph = LoadGraph("data/texture/player.png");
-	playerX = 288; 
-	playerY = 400;
+	playerPos.x = 288; 
+	playerPos.y = 400;
 
 	// ゲームループ.
 	while (1)
@@ -44,41 +49,57 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			// 矢印キーを押していたらプレイヤーを移動させる
 			if (CheckHitKey(KEY_INPUT_UP) == 1)
 			{
-				playerY -= 3;
+				playerDirection.y = -1.0f;
 			}
-			if (CheckHitKey(KEY_INPUT_DOWN) == 1)
+			else if (CheckHitKey(KEY_INPUT_DOWN) == 1)
 			{
-				playerY += 3;
+				playerDirection.y = 1.0f;
+			}
+			else
+			{
+				playerDirection.y = 0.0f;
 			}
 			if (CheckHitKey(KEY_INPUT_LEFT) == 1)
 			{
-				playerX -= 3;
+				playerDirection.x = -1.0f;
 			}
-			if (CheckHitKey(KEY_INPUT_RIGHT) == 1)
+			else if (CheckHitKey(KEY_INPUT_RIGHT) == 1)
 			{
-				playerX += 3;
+				playerDirection.x = 1.0f;
+			}
+			else
+			{
+				playerDirection.x = 0.0f;
 			}
 
+			if (VSize(playerDirection) != 0)
+			{
+				playerDirection = VNorm(playerDirection);
+			}
+
+			VECTOR  verocity = VScale(playerDirection, playerSpeed);
+			playerPos = VAdd(playerPos, verocity);
+
 			// プレイヤーが画面左端からはみ出そうになっていたら画面内の座標に戻してあげる
-			if (playerX < 0)
+			if (playerPos.x < 0)
 			{
-				playerX = 0;
+				playerPos.x = 0;
 			}
-			if (playerX > 640 - 64)
+			if (playerPos.x > 640 - 64)
 			{
-				playerX = 640 - 64;
+				playerPos.x = 640 - 64;
 			}
-			if (playerY < 0)
+			if (playerPos.y < 0)
 			{
-				playerY = 0;
+				playerPos.y = 0;
 			}
-			if (playerY > 480 - 64)
+			if (playerPos.y > 480 - 64)
 			{
-				playerY = 480 - 64;
+				playerPos.y = 480 - 64;
 			}
 
 			// プレイヤーを描画
-			DrawGraph(playerX, playerY, playerGraph, FALSE);
+			DrawGraph(playerPos.x, playerPos.y, playerGraph, FALSE);
 		}
 
 		//------------------------------//
